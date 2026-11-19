@@ -257,9 +257,12 @@ def _normalize_stem(name: str) -> str:
     is deliberately content-agnostic: the chain itself is validated by hash.
     """
     stem = Path(name).stem.lower()
-    stem = re.sub(r"[^a-z0-9]+", " ", stem)
+    # keep letters/digits (incl. CJK) and turn everything else, incl. "_", into spaces
+    stem = re.sub(r"[^\w]+", " ", stem, flags=re.UNICODE)
+    stem = stem.replace("_", " ")
     drop = {"final", "draft", "copy", "old", "new", "backup", "bak", "rev",
-            "version", "ver", "tmp", "temp"}
+            "version", "ver", "tmp", "temp", "md", "txt", "pdf", "doc", "docx",
+            "csv", "json", "xlsx", "png", "jpg"}
     out = []
     for tok in stem.split():
         if tok in drop:
