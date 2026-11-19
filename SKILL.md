@@ -5,6 +5,8 @@ description: "Repair a research file library: inventory files with content hashe
 
 # librepair — Research File-Library Repair with Evidence
 
+> **脚本路径**：本技能安装于 `/skills/weekly-skill/`，脚本绝对路径为 `/skills/weekly-skill/scripts/`（工作目录是 `/app/work`，不要用相对路径）。
+
 Turn a messy batch of research files into a library that can be trusted, searched and handed over. The failure mode this skill exists to prevent: a "professional-looking" reorganization that moves files without a manifest, overwrites same-named files, silently skips unreadable paths, guesses metadata from filenames, and cannot be re-run or checked.
 
 **Method in one line:** hash every source file, decide placement/dedup/version from content and rules, copy (never move) into the organized tree, then write a manifest + operations log + index + `result.json` that a reviewer can re-run and verify.
@@ -22,7 +24,7 @@ All scripts are in `scripts/` next to this file. Run from `/app/work`.
 ### Phase 1 — Inventory (hash everything, no guessing)
 
 ```bash
-python3 scripts/libflow.py inventory --case /input/case.json --out /app/work
+python3 /skills/weekly-skill/scripts/libflow.py inventory --case /input/case.json --out /app/work
 ```
 
 Produces `work/inventory.json`: for every source file — absolute path, path relative to the input root, size, mtime, permission bits, detected kind and **sha256**. Read this file; it is the single source of truth. Never re-walk the raw tree in your head.
@@ -32,7 +34,7 @@ If a path is unreadable, `libflow` records it in the operation log at apply time
 ### Phase 2 — Plan (decide, then show your work)
 
 ```bash
-python3 scripts/libflow.py plan --case /input/case.json --out /app/work
+python3 /skills/weekly-skill/scripts/libflow.py plan --case /input/case.json --out /app/work
 ```
 
 Produces `work/plan.json` with:
@@ -45,7 +47,7 @@ Check the plan before applying: every source file must have exactly one action. 
 ### Phase 3 — Apply (copy, never move; log everything)
 
 ```bash
-python3 scripts/libflow.py apply --case /input/case.json --out /app/work
+python3 /skills/weekly-skill/scripts/libflow.py apply --case /input/case.json --out /app/work
 ```
 
 Copies sources into `work/library/`, normalizing names if asked, deduplicating by content, and writes:
@@ -58,8 +60,8 @@ Copies sources into `work/library/`, normalizing names if asked, deduplicating b
 ### Phase 4 — Report + verify (the quality bar)
 
 ```bash
-python3 scripts/libflow.py report --case /input/case.json --out /app/work
-python3 scripts/verify.py --out /app/work
+python3 /skills/weekly-skill/scripts/libflow.py report --case /input/case.json --out /app/work
+python3 /skills/weekly-skill/scripts/verify.py --out /app/work
 ```
 
 `report` writes `result.json` with `case_id`, `status`, deliverables, counts, answers, uncertainty, sources and changes. `verify` independently re-hashes the organized tree, confirms every source file is accounted for, and fails (non-zero) on missing files, hash mismatches, unaccounted sources or failed operations.
@@ -96,7 +98,7 @@ cp -r /app/work/library /app/work/manifest.json /app/work/index.json \
 ## Self-check before submitting
 
 ```bash
-python3 scripts/verify.py --out /app/work
+python3 /skills/weekly-skill/scripts/verify.py --out /app/work
 python3 -c "import json;r=json.load(open('/app/work/result.json'));print(r['case_id'], r['status'], r['counts'])"
 ```
 
