@@ -1,0 +1,26 @@
+{
+  "case_id": "example-minimal",
+  "task": "Organize the sample library under input/, deduplicate by content and record version chains.",
+  "input_dir": "input",
+  "rules": {
+    "layout": "by_type",
+    "naming": "normalize",
+    "deduplicate": true,
+    "keep_source": true
+  },
+  "version_notes": [
+    {
+      "logical": "orion sample a log",
+      "oldest": "legacy/orion_sampleA_2023_v1.txt",
+      "newest": "new/orion_sampleA_2023_final.txt"
+    }
+  ],
+  "aliases": {
+    "new/orion_sampleA_2023_final.txt": "canonical current version"
+  },
+  "metadata_fields": ["project", "year", "sample", "instrument", "author", "title_guess"],
+  "questions": [
+    "Which files are exact duplicates?",
+    "List the version chain for the Orion sample A log."
+  ]
+}
